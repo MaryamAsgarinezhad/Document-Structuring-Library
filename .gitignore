@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+.env
+
+# generated benchmark artifacts (large PDFs are kept, run outputs are not)
+scripts/benchmark_output/

@@ -1,0 +1,49 @@
+[project]
+name = "docstruct"
+version = "0.1.0"
+description = "Turn long, unstructured Persian PDFs into structured JSON (headings, sections, tables) and clean Markdown"
+readme = "README.md"
+authors = [
+    { name = "maryam", email = "maryamasgn123@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.7",
+    "pydantic-ai-slim[openai]>=0.0.30",
+    "python-dotenv>=1.0",
+    "pymupdf>=1.24",
+]
+
+[project.optional-dependencies]
+pdfplumber = [
+    "pdfplumber>=0.11",
+]
+unstructured = [
+    "unstructured[pdf]>=0.15",
+]
+docling = [
+    "docling>=2.0",
+]
+anydoc = [
+    "firecrawl-anydoc>=0.1.7",
+]
+benchmark = [
+    "docstruct[pdfplumber]",
+    "docstruct[unstructured]",
+    "docstruct[docling]",
+    "docstruct[anydoc]",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[build-system]
+requires = ["uv_build>=0.11.32,<0.12.0"]
+build-backend = "uv_build"

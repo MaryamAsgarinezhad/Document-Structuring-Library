@@ -1,0 +1,108 @@
+{
+  "pymupdf": {
+    "circular_1391_excerpt": {
+      "elapsed_seconds": 0.51,
+      "n_blocks": 146,
+      "n_tables": 0,
+      "n_heading_candidates": 132,
+      "rtl_order_correct": true
+    },
+    "governance_380889_excerpt": {
+      "elapsed_seconds": 0.67,
+      "n_blocks": 191,
+      "n_tables": 0,
+      "n_heading_candidates": 182,
+      "rtl_order_correct": true
+    },
+    "1391_full": {
+      "elapsed_seconds": 29.02,
+      "n_blocks": 6147,
+      "n_tables": 14,
+      "n_heading_candidates": 5400,
+      "rtl_order_correct": true
+    },
+    "380889_full": {
+      "elapsed_seconds": 32.07,
+      "n_blocks": 5462,
+      "n_tables": 15,
+      "n_heading_candidates": 4063,
+      "rtl_order_correct": true
+    }
+  },
+  "pdfplumber": {
+    "circular_1391_excerpt": {
+      "elapsed_seconds": 0.43,
+      "n_blocks": 27,
+      "n_tables": 0,
+      "n_heading_candidates": 15,
+      "rtl_order_correct": false
+    },
+    "governance_380889_excerpt": {
+      "elapsed_seconds": 0.89,
+      "n_blocks": 30,
+      "n_tables": 0,
+      "n_heading_candidates": 21,
+      "rtl_order_correct": false
+    },
+    "1391_full": {
+      "elapsed_seconds": 20.48,
+      "n_blocks": 1259,
+      "n_tables": 16,
+      "n_heading_candidates": 677,
+      "rtl_order_correct": false
+    },
+    "380889_full": {
+      "elapsed_seconds": 20.52,
+      "n_blocks": 919,
+      "n_tables": 72,
+      "n_heading_candidates": 548,
+      "rtl_order_correct": false
+    }
+  },
+  "unstructured": {
+    "circular_1391_excerpt": {
+      "elapsed_seconds": 7.43,
+      "n_blocks": 454,
+      "n_tables": 0,
+      "n_heading_candidates": 289,
+      "rtl_order_correct": false
+    },
+    "governance_380889_excerpt": {
+      "elapsed_seconds": 8.16,
+      "n_blocks": 1291,
+      "n_tables": 0,
+      "n_heading_candidates": 985,
+      "rtl_order_correct": false
+    }
+  },
+  "anydoc": {
+    "circular_1391_excerpt": {
+      "elapsed_seconds": 0.04,
+      "n_blocks": 44,
+      "n_tables": 1,
+      "n_heading_candidates": 29,
+      "rtl_order_correct": true
+    },
+    "governance_380889_excerpt": {
+      "elapsed_seconds": 0.12,
+      "n_blocks": 39,
+      "n_tables": 1,
+      "n_heading_candidates": 19,
+      "rtl_order_correct": true
+    },
+    "1391_full": {
+      "elapsed_seconds": 1.62,
+      "n_blocks": 5076,
+      "n_tables": 46,
+      "n_heading_candidates": 3272,
+      "rtl_order_correct": true
+    },
+    "380889_full": {
+      "elapsed_seconds": 1.22,
+      "n_blocks": 1382,
+      "n_tables": 146,
+      "n_heading_candidates": 580,
+      "rtl_order_correct": true
+    }
+  }
+}
