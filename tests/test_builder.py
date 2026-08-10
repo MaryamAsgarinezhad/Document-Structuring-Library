@@ -85,6 +85,32 @@ def test_set_title_only_takes_first_non_empty_value():
     assert b.build().title == "عنوان اول"
 
 
+def test_duplicate_op_within_dedup_window_is_dropped():
+    b = DocumentBuilder()
+    b.apply(NewHeading(level=1, text="فصل اول"))
+    b.apply(NewParagraph(text="یک پاراگراف"))
+    # a chunk-overlap re-emission of the same paragraph, right behind it
+    b.apply(NewParagraph(text="یک پاراگراف"))
+    b.apply(NewParagraph(text="پاراگراف بعدی"))
+
+    doc = b.build()
+
+    assert doc.sections[0].paragraphs == ["یک پاراگراف", "پاراگراف بعدی"]
+
+
+def test_duplicate_heading_is_dropped_and_open_section_stays_the_same():
+    b = DocumentBuilder()
+    b.apply(NewHeading(level=1, text="فصل اول"))
+    b.apply(NewHeading(level=1, text="فصل اول"))  # re-emitted, e.g. from overlap
+    b.apply(NewParagraph(text="متن"))
+
+    doc = b.build()
+
+    # not duplicated into two sibling sections — the paragraph lands under the one section
+    assert len(doc.sections) == 1
+    assert doc.sections[0].paragraphs == ["متن"]
+
+
 def test_breadcrumb_reflects_currently_open_path():
     b = DocumentBuilder()
     b.apply(NewHeading(level=1, text="فصل اول"))

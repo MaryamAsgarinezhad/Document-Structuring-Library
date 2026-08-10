@@ -9,20 +9,47 @@ chunk at a time.
 
 from __future__ import annotations
 
+from collections import deque
+
 from ..schema import Section, StructuredDocument, TableData
 from .ops import ChunkOp, NewHeading, NewParagraph, NewTable
+
+# How many recently-applied ops to remember for duplicate detection. This is
+# a rolling window, not a whole-document set, on purpose: it exists to catch
+# the case where chunk overlap (see chunking.chunk_blocks) causes the model
+# to re-emit an op for content it already saw and reported on in the
+# previous chunk, which — because each chunk call is otherwise stateless —
+# it has no way to know it already did. A small window catches that
+# boundary-adjacent duplication without suppressing genuine, far-apart
+# repeated content (e.g. the same boilerplate phrase reused across the
+# document), which a global/whole-document dedup set would incorrectly eat.
+_DEDUP_WINDOW = 12
+
+
+def _op_signature(op: ChunkOp) -> str:
+    if isinstance(op, NewHeading):
+        return f"heading:{op.level}:{op.text.strip()}"
+    if isinstance(op, NewParagraph):
+        return f"paragraph:{op.text.strip()}"
+    return f"table:{op.caption}:{tuple(op.headers)}:{tuple(tuple(row) for row in op.rows)}"
 
 
 class DocumentBuilder:
     def __init__(self) -> None:
         self.document = StructuredDocument()
         self._open_sections: list[Section] = []
+        self._recent_signatures: deque[str] = deque(maxlen=_DEDUP_WINDOW)
 
     def set_title(self, title: str) -> None:
         if not self.document.title and title.strip():
             self.document.title = title.strip()
 
     def apply(self, op: ChunkOp) -> None:
+        signature = _op_signature(op)
+        if signature in self._recent_signatures:
+            return
+        self._recent_signatures.append(signature)
+
         if isinstance(op, NewHeading):
             self._apply_heading(op)
         elif isinstance(op, NewParagraph):

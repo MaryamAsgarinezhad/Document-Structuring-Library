@@ -52,3 +52,31 @@ def test_empty_document_produces_no_chunks():
     doc = ParsedDocument(source_path="x.pdf", backend="pymupdf", blocks=[])
 
     assert chunk_blocks(doc) == []
+
+
+def test_overlap_repeats_tail_of_previous_chunk_as_context():
+    blocks = [_text_block(i, "س" * 60) for i in range(5)]
+    doc = ParsedDocument(source_path="x.pdf", backend="pymupdf", blocks=blocks)
+
+    chunks = chunk_blocks(doc, max_chars=100, overlap_blocks=1)
+
+    assert len(chunks) > 1
+    # first chunk has no prior chunk to draw context from
+    assert chunks[0].context_prefix_len == 0
+    for prev, cur in zip(chunks, chunks[1:]):
+        assert cur.context_prefix_len == 1
+        # the overlapping block is literally the previous chunk's last block
+        assert cur.blocks[0] is prev.blocks[-1]
+        # and it's excluded from new_blocks, which is what should be processed as new
+        assert cur.new_blocks == cur.blocks[1:]
+
+
+def test_no_overlap_by_default():
+    blocks = [_text_block(i, "س" * 60) for i in range(5)]
+    doc = ParsedDocument(source_path="x.pdf", backend="pymupdf", blocks=blocks)
+
+    chunks = chunk_blocks(doc, max_chars=100)
+
+    assert all(c.context_prefix_len == 0 for c in chunks)
+    flattened = [b for c in chunks for b in c.blocks]
+    assert flattened == blocks

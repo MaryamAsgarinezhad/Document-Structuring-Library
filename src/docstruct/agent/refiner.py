@@ -27,7 +27,7 @@ from pydantic_ai.providers.openai import OpenAIProvider
 from ..parser.types import Block, BlockKind, ParsedDocument
 from ..schema import StructuredDocument
 from .builder import DocumentBuilder
-from .chunking import chunk_blocks
+from .chunking import Chunk, chunk_blocks
 from .ops import ChunkResult
 
 _DEFAULT_BASE_URL = "https://ai-gateway.mohaymen.ir/v1"
@@ -58,6 +58,10 @@ For the CURRENT CHUNK ONLY, emit a list of operations, in the same order the con
 Rules:
 - Only emit operations for content that is actually in the current chunk. Never repeat content already
   covered by earlier chunks (you only see their headings, as a breadcrumb, not their full text).
+- Some blocks at the start of a chunk are marked "[CONTEXT - already covered by the previous chunk, do
+  NOT emit an operation for this]". They are shown only so you can see what immediately precedes the new
+  content, to correctly judge whether the new content continues the same paragraph/section or starts a
+  new one. Never emit a heading/paragraph/table operation for a block marked this way.
 - Never invent headings, structure, or content that are not present in this chunk's text, and never
   paraphrase or "clean up" the source text — reproduce it as given.
 - If the whole document's title becomes apparent in this chunk (usually only possible in the first
@@ -102,8 +106,14 @@ def _render_block(block: Block) -> str:
     return f"TABLE: {rows_preview}"
 
 
-def _render_chunk(blocks: list[Block]) -> str:
-    return "\n\n".join(_render_block(b) for b in blocks)
+def _render_chunk(chunk: Chunk) -> str:
+    rendered = []
+    for i, block in enumerate(chunk.blocks):
+        text = _render_block(block)
+        if i < chunk.context_prefix_len:
+            text = f"[CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] {text}"
+        rendered.append(text)
+    return "\n\n".join(rendered)
 
 
 def _render_breadcrumb(breadcrumb: list[tuple[int, str]]) -> str:
@@ -117,18 +127,30 @@ def structure_document(
     *,
     model: Model | str | None = None,
     max_chars_per_chunk: int = 8000,
+    overlap_blocks: int = 2,
 ) -> StructuredDocument:
-    """Build a :class:`StructuredDocument` from ``parsed``, chunk by chunk."""
+    """Build a :class:`StructuredDocument` from ``parsed``, chunk by chunk.
+
+    ``overlap_blocks`` repeats the last N blocks of each chunk as read-only
+    context at the start of the next one (see ``chunking.chunk_blocks``) —
+    this helps the model correctly continue a paragraph/section that was
+    cut mid-way by a chunk boundary. Each chunk call is still independent
+    (no shared conversation history), so the model has no memory of what it
+    already emitted for those overlapping blocks; the prompt instructs it
+    not to re-emit them, and ``DocumentBuilder`` additionally dedupes
+    identical ops within a small rolling window as a safety net in case it
+    does anyway.
+    """
     resolved_model = model if model is not None else default_model()
     agent: Agent[None, ChunkResult] = Agent(
         resolved_model, output_type=ChunkResult, system_prompt=_SYSTEM_PROMPT
     )
 
     builder = DocumentBuilder()
-    for chunk in chunk_blocks(parsed, max_chars=max_chars_per_chunk):
+    for chunk in chunk_blocks(parsed, max_chars=max_chars_per_chunk, overlap_blocks=overlap_blocks):
         prompt = (
             f"Currently open headings: {_render_breadcrumb(builder.breadcrumb(max_items=5))}\n\n"
-            f"Current chunk:\n{_render_chunk(chunk.blocks)}"
+            f"Current chunk:\n{_render_chunk(chunk)}"
         )
         result = agent.run_sync(prompt)
         chunk_result = result.output
