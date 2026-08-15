@@ -7,7 +7,7 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart, UserPromptPart
 from pydantic_ai.models.function import FunctionModel
 
 from docstruct.agent.ops import ChunkResult, NewHeading, NewParagraph
-from docstruct.agent.refiner import structure_document
+from docstruct.agent.refiner import ChunkTrace, structure_document
 from docstruct.parser.types import Block, BlockKind, ParsedDocument
 
 
@@ -85,3 +85,75 @@ def test_no_chunks_returns_empty_document():
 
     assert doc.title is None
     assert doc.sections == []
+
+
+def test_on_chunk_reports_prompt_and_result_for_every_chunk():
+    scripted_responses = [
+        ChunkResult(operations=[NewHeading(level=1, text="فصل اول")]),
+        ChunkResult(operations=[NewParagraph(text="ادامه فصل اول")]),
+    ]
+    call_count = 0
+
+    def respond(messages, info):
+        nonlocal call_count
+        chunk_result = scripted_responses[call_count]
+        call_count += 1
+        tool_name = info.output_tools[0].name
+        return ModelResponse(parts=[ToolCallPart(tool_name=tool_name, args=chunk_result.model_dump())])
+
+    model = FunctionModel(respond)
+    blocks = [_text_block(0, "متن " * 200), _text_block(1, "متن دیگر " * 200)]
+    parsed = ParsedDocument(source_path="x.pdf", backend="pymupdf", blocks=blocks)
+
+    traces: list[ChunkTrace] = []
+    structure_document(parsed, model=model, max_chars_per_chunk=500, on_chunk=traces.append)
+
+    assert [t.index for t in traces] == [1, 2]
+    assert all(t.error is None for t in traces)
+    assert traces[0].result == scripted_responses[0]
+    assert traces[1].result == scripted_responses[1]
+    assert "فصل اول" in traces[1].prompt  # breadcrumb from chunk 1 shows up in chunk 2's prompt
+
+
+def test_skip_failed_chunks_continues_and_reports_error():
+    scripted_responses = [None, ChunkResult(operations=[NewParagraph(text="پاراگراف دوم")])]
+    call_count = 0
+
+    def respond(messages, info):
+        nonlocal call_count
+        chunk_result = scripted_responses[call_count]
+        call_count += 1
+        if chunk_result is None:
+            raise RuntimeError("simulated model failure")
+        tool_name = info.output_tools[0].name
+        return ModelResponse(parts=[ToolCallPart(tool_name=tool_name, args=chunk_result.model_dump())])
+
+    model = FunctionModel(respond)
+    blocks = [_text_block(0, "متن " * 200), _text_block(1, "متن دیگر " * 200)]
+    parsed = ParsedDocument(source_path="x.pdf", backend="pymupdf", blocks=blocks)
+
+    traces: list[ChunkTrace] = []
+    doc = structure_document(
+        parsed, model=model, max_chars_per_chunk=500, on_chunk=traces.append, skip_failed_chunks=True
+    )
+
+    assert len(traces) == 2
+    assert traces[0].error is not None and traces[0].result is None
+    assert traces[1].error is None and traces[1].result is not None
+    # the failed chunk contributed nothing, but the run continued past it
+    assert doc.preamble_paragraphs == ["پاراگراف دوم"]
+
+
+def test_without_skip_failed_chunks_a_failure_propagates():
+    def respond(messages, info):
+        raise RuntimeError("simulated model failure")
+
+    model = FunctionModel(respond)
+    blocks = [_text_block(0, "متن " * 200)]
+    parsed = ParsedDocument(source_path="x.pdf", backend="pymupdf", blocks=blocks)
+
+    try:
+        structure_document(parsed, model=model, max_chars_per_chunk=500)
+        raise AssertionError("expected the simulated failure to propagate")
+    except RuntimeError as exc:
+        assert "simulated model failure" in str(exc)

@@ -67,6 +67,20 @@ Swap the parser backend explicitly if you want:
 parsed = parse("my_document.pdf", backend="pdfplumber")  # or "unstructured", "docling", "anydoc"
 ```
 
+To troubleshoot a specific chunk (e.g. a run that produced unexpected or missing output), pass `on_chunk` to
+write every chunk's exact prompt and the model's raw response (or error) to disk, and optionally
+`skip_failed_chunks=True` so one bad chunk doesn't abort the whole run:
+
+```python
+from docstruct.agent import file_trace_writer
+
+document = structure_document(
+    parsed,
+    on_chunk=file_trace_writer("trace/"),   # trace/chunk_001.prompt.txt, chunk_001.result.json, ...
+    skip_failed_chunks=True,                # log a failed chunk's error and continue instead of raising
+)
+```
+
 Or convert a JSON file you already have, with zero parser/agent dependency:
 
 ```python

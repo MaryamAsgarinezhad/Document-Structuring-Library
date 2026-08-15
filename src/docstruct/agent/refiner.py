@@ -18,6 +18,8 @@ from __future__ import annotations
 
 import os
 import unicodedata
+from collections.abc import Callable
+from dataclasses import dataclass
 
 from pydantic_ai import Agent
 from pydantic_ai.models import Model
@@ -122,12 +124,30 @@ def _render_breadcrumb(breadcrumb: list[tuple[int, str]]) -> str:
     return " > ".join(f"H{level}:{text}" for level, text in breadcrumb)
 
 
+@dataclass
+class ChunkTrace:
+    """One chunk's prompt and outcome, handed to ``on_chunk`` for
+    troubleshooting ``structure_document`` — e.g. to see exactly what was
+    sent to the model for a chunk that produced unexpected or missing
+    output. ``result`` is set on success, ``error`` on failure; exactly one
+    of the two is non-None. See ``docstruct.agent.tracing.file_trace_writer``
+    for a ready-made callback that writes these to disk."""
+
+    index: int
+    chunk: Chunk
+    prompt: str
+    result: ChunkResult | None
+    error: BaseException | None
+
+
 def structure_document(
     parsed: ParsedDocument,
     *,
     model: Model | str | None = None,
     max_chars_per_chunk: int = 8000,
     overlap_blocks: int = 2,
+    on_chunk: Callable[[ChunkTrace], None] | None = None,
+    skip_failed_chunks: bool = False,
 ) -> StructuredDocument:
     """Build a :class:`StructuredDocument` from ``parsed``, chunk by chunk.
 
@@ -140,6 +160,18 @@ def structure_document(
     not to re-emit them, and ``DocumentBuilder`` additionally dedupes
     identical ops within a small rolling window as a safety net in case it
     does anyway.
+
+    ``on_chunk``, if given, is called once per chunk (success or failure)
+    with a :class:`ChunkTrace` — for troubleshooting which chunk produced a
+    given piece of output, or none at all.
+
+    ``skip_failed_chunks``: by default, a chunk that raises (a model output
+    validation failure, a transient network error, ...) propagates and
+    aborts the whole run. On a long document a single bad chunk out of many
+    is disproportionately costly to lose everything over, so set this to
+    ``True`` to log the failure via ``on_chunk`` and continue with the next
+    chunk instead — that chunk's content is then simply missing from the
+    result rather than the whole run failing.
     """
     resolved_model = model if model is not None else default_model()
     agent: Agent[None, ChunkResult] = Agent(
@@ -147,13 +179,24 @@ def structure_document(
     )
 
     builder = DocumentBuilder()
-    for chunk in chunk_blocks(parsed, max_chars=max_chars_per_chunk, overlap_blocks=overlap_blocks):
+    chunks = chunk_blocks(parsed, max_chars=max_chars_per_chunk, overlap_blocks=overlap_blocks)
+    for index, chunk in enumerate(chunks, start=1):
         prompt = (
             f"Currently open headings: {_render_breadcrumb(builder.breadcrumb(max_items=5))}\n\n"
             f"Current chunk:\n{_render_chunk(chunk)}"
         )
-        result = agent.run_sync(prompt)
+        try:
+            result = agent.run_sync(prompt)
+        except Exception as exc:
+            if on_chunk is not None:
+                on_chunk(ChunkTrace(index=index, chunk=chunk, prompt=prompt, result=None, error=exc))
+            if skip_failed_chunks:
+                continue
+            raise
+
         chunk_result = result.output
+        if on_chunk is not None:
+            on_chunk(ChunkTrace(index=index, chunk=chunk, prompt=prompt, result=chunk_result, error=None))
         if chunk_result.title:
             builder.set_title(chunk_result.title)
         for op in chunk_result.operations:
