@@ -40,21 +40,59 @@ You are converting a Persian (Farsi) document into a structured outline, one chu
 time. You do not see the whole document at once, only the current chunk of raw text/table blocks below,
 plus a short breadcrumb of the section headings currently open above this point in the document.
 
-Each TEXT block below is one paragraph-ish unit as segmented by the PDF parser — it may itself be a
-short sentence fragment purely because of how the page was laid out (columns, footnote markers, line
-spacing), NOT because it's a heading. Treat a block as a "heading" ONLY when it plausibly functions as a
-title/section label on its own: a standalone label with no closing sentence punctuation, PLUS at least
-one supporting signal — larger font_size than surrounding blocks, bold, or a structural numbering pattern
-(e.g. "فصل"/"بخش"/"ماده" + number, "Chapter"/"Article" + number, "1.2.3"-style numbering). A short block
-that reads like a mid-sentence continuation (no trailing punctuation resolving it, continues an idea from
-the previous block) is body text, not a heading, regardless of length.
+Each TEXT block below is ONE LINE as segmented by the PDF's line-by-line text extraction — NOT one
+paragraph and NOT one heading. A single heading or paragraph is very often split across several
+consecutive TEXT blocks purely because of how the page was laid out (line wrapping, columns, justified
+text). You must reassemble these before classifying: read the blocks in order and merge any run of
+consecutive blocks that clearly continue one sentence/label into a SINGLE operation whose text is the
+full combined wording (join the fragments with a single space, in order) — do NOT emit one operation per
+line fragment. For example, "بخشنامه های مطالعات و" immediately followed by "مقررات بانکی" is one heading,
+"بخشنامه های مطالعات و مقررات بانکی", not two; two paragraph fragments that together form one sentence are
+one paragraph operation, not two.
+
+The signal for "these blocks belong together" is semantic and grammatical, not just short length: if a
+block ends with no closing punctuation and grammatically requires what follows to complete the thought (a
+genitive/ezafe construction trailing off, a dangling connector, a sentence with no verb yet), merge it
+with the next block(s) until you reach one that actually completes the sentence or label. Do NOT merge
+blocks that are each already complete on their own, even if short and unpunctuated — most importantly, a
+table of contents or any list/index section (many short entries, each ending in a page number, often
+after a run of dots) is a sequence of SEPARATE complete entries: each one is its own paragraph operation,
+never merged with its neighbors just because none of them end in punctuation.
+
+Ignore, and never emit any operation for:
+- A block whose entire content is just a page number (a bare number, optionally with surrounding dashes
+  or dots, e.g. "5", "- 12 -") — this is not document content.
+- A running header or footer: a short phrase that recurs verbatim at the top (or bottom) of page after
+  page throughout the document — typically the document's own title/letterhead repeated everywhere, not
+  a fresh paragraph or heading each time. A chunk long enough to span multiple pages will often show this
+  same exact phrase reappearing more than once; treat every occurrence as page furniture to skip, not as
+  new content — including a single occurrence you recognize as this kind of running letterhead text even
+  if it only appears once in the current chunk.
+
+Treat a (possibly merged) span as a "heading" ONLY when it plausibly functions as a title/section label on
+its own: a standalone label, PLUS at least one supporting signal — larger font_size than surrounding
+blocks, bold, or a structural numbering/legal-article pattern (see below). Something that reads like a
+list/table-of-contents entry, or a mid-sentence continuation, is body text, not a heading, regardless of
+length.
+
+Nesting from explicit numbering and legal structure — these are stronger signals than font size/boldness
+alone, use them whenever present:
+- Explicit numbering at the start of a heading, like "1-", "1.2-", or "2.4.1", tells you the nesting level
+  directly: count the number of dot/dash-separated numeric segments (e.g. "2.4.1" has 3 segments, so it's
+  3 levels deep) and nest it that many levels under whichever unnumbered section (e.g. a "فصل"/"بخش") is
+  currently open in the breadcrumb.
+- "ماده" marks a legal Article — it normally nests directly under the currently open بخش/فصل, at whatever
+  level comes after that in the breadcrumb.
+- "تبصره" marks a Note/clause that belongs to the ماده immediately preceding it — nest it ONE LEVEL DEEPER
+  than that ماده, as its child, not as its sibling.
 
 For the CURRENT CHUNK ONLY, emit a list of operations, in the same order the content appears:
-- "heading": as described above. Infer its nesting level (1 = top-level) from the signals above and
-  from the currently-open breadcrumb — there is no explicit table of contents to rely on, so structure
-  must be inferred conservatively; when in doubt, prefer "paragraph" over "heading".
-- "paragraph": a paragraph (or paragraph fragment) of body text belonging to whichever heading is
-  currently open (or to the document's preamble if no heading has appeared yet anywhere in the document).
+- "heading": as described above. Infer its nesting level (1 = top-level) from the signals above and from
+  the currently-open breadcrumb — there is no explicit table of contents to rely on, so structure must be
+  inferred conservatively; when in doubt, prefer "paragraph" over "heading".
+- "paragraph": a paragraph (after merging any wrapped-line fragments per above) of body text belonging to
+  whichever heading is currently open (or to the document's preamble if no heading has appeared yet
+  anywhere in the document).
 - "table": a table's caption/headers/rows, preserved as given, attached to the currently open heading.
 
 Rules:
@@ -65,7 +103,8 @@ Rules:
   content, to correctly judge whether the new content continues the same paragraph/section or starts a
   new one. Never emit a heading/paragraph/table operation for a block marked this way.
 - Never invent headings, structure, or content that are not present in this chunk's text, and never
-  paraphrase or "clean up" the source text — reproduce it as given.
+  paraphrase or "clean up" the source text — reproduce it as given, aside from joining wrapped-line
+  fragments with a single space as instructed above.
 - If the whole document's title becomes apparent in this chunk (usually only possible in the first
   chunk), set `title`; otherwise leave it null.
 """
