@@ -1,0 +1,58 @@
+Currently open headings: (none open yet)
+
+Current chunk:
+TEXT [font_size=27]: بانک ໑ජ໊චی ॒टࢭوری اسلاਗی اୌان
+
+TEXT [font_size=13, bold]: مدیریت کل مقررات، مجوزهای بانکی و مبارزه با پولشویی
+
+TEXT [font_size=34, bold]: مجموعه بخشنامه های
+
+TEXT [font_size=34, bold]: مدیریت کل مقررات، مجوزهای بانکی
+
+TEXT [font_size=34, bold]: و مبارزه با پولشویی
+
+TEXT [font_size=23]: سال1391
+
+TEXT [font_size=13]: گردآوری: مدیریت کل مقررات، مجوزهای بانکی و مبارزه با پولشویی
+
+TEXT [font_size=19]: بانک مرکزی جمهوری اسلامی ایران
+
+TEXT [font_size=16]: تابستان 1392
+
+TEXT [font_size=12]: Central Bank of the Islamic Republic of Iran
+
+TEXT [font_size=12]: Regulating, Licensing and AML Directorate
+
+TEXT [font_size=32, bold]: A collection of Directives Issued by
+
+TEXT [font_size=32, bold]: Regulating, Licensing and
+
+TEXT [font_size=32, bold]: AML Directorate
+
+TEXT [font_size=13]: (From March 2012 to March 2013)
+
+TEXT [font_size=17]: Collected by Regulating, Licensing and AML Directorate
+
+TEXT [font_size=17]: Central Bank of the Islamic Republic of Iran
+
+TEXT [font_size=13]: Summer 2013
+
+TEXT [font_size=10, bold]: بانک مرکزی جمهوری اسلامی ایران
+
+TEXT [font_size=10, bold]: مدیریت کل مقررات، مجوزهای بانکی و مبارزه با پولشویی
+
+TEXT [font_size=24, bold]: مجموعه بخشنامه های
+
+TEXT [font_size=24, bold]: مدیریت کل مقررات، مجوزهای بانکی
+
+TEXT [font_size=24, bold]: و مبارزه با پولشویی
+
+TEXT [font_size=21, bold]: سال1391
+
+TEXT [font_size=12]: بخشنامه های مدیریت کل مقررات، مجوزهای بانکی و مبارزه با پولشویی سال 1391
+
+TEXT [font_size=11, bold]: پیش گفتار
+
+TEXT [font_size=12, bold]: بدون هیچ گونه تردید، بانک ها و سایر مؤسسات اعتبـاری کـه بـه انجـام عملیـات
+
+TEXT [font_size=12, bold]: بانکی مبادرت می نمایند، از جایگاه ویژه و تأثیرگذاری در اقتصـاد هـر کشـور برخوردارنـد .

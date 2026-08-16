@@ -1,0 +1,56 @@
+Currently open headings: H1:بخش اول : بخشنامه های مطالعات و مقررات بانکی > H2:دستورالعمل حسابداری کارت اعتباری میزان برای کارکنان دولت و کارگران > H3:بخشنامه شماره59912 / 91 مورخ08 / 03 / 1391 ; ابلاغ دستورالعمل حساب جاری > H6:10 ( ملاک عمل قراردادن آدرس و کدپستی دارندگ ان و یا متقاضیان افتتـاح حسـاب
+
+Current chunk:
+[CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12, bold]: 2 - 4 - واریز به موقع سهم خود از کل تسـهیلات تعهـد شـده، بـه
+
+[CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12, bold]: حساب مربوطه ؛
+
+TEXT [font_size=12, bold]: 3 - 4 - کسب اطلاع از هرگونه تغییر حائز اهمیت در عملیات روزانه
+
+TEXT [font_size=12, bold]: و وضعیت اعتباری متقاضی؛
+
+TEXT [font_size=12, bold]: 4 - 4 - اطلاع رسانی به موقع به بانک عامل در صورت وقوع هرگونـه
+
+TEXT [font_size=12, bold]: رخداد غیرمتعارف ؛
+
+TEXT [font_size=12, bold]: 5 - 4 - حضور فعال در جلسات کمیته .
+
+TEXT [font_size=12]: 140
+
+TEXT [font_size=12]: بخشنامه های مدیریت کل مقررات، مجوزهای بانکی و مبارزه با پولشویی سال 1391
+
+TEXT [font_size=11, bold]: ماده5 - نکات لازم الرعایه در مشارکت نامه :
+
+TEXT [font_size=12, bold]: ضروری است در متن مشارکت نامه حداقل، موارد ذیل به روشنی و در حد کفایت تصـریح
+
+TEXT [font_size=12, bold]: شود :
+
+TEXT [font_size=12, bold]: 1 - 5 - مشخصات اصلی و تابعیت اعضا؛
+
+TEXT [font_size=12, bold]: 2 - 5 - تعیین سهم هر یک از اعضا؛
+
+TEXT [font_size=12, bold]: 3 - 5 - حقوق و تعهدات اعضا؛
+
+TEXT [font_size=12, bold]: 4 - 5 - تقسیم کار بین اعضا و تفویض برخی اختیارات بانک عامـل
+
+TEXT [font_size=12, bold]: درصورت لزوم؛
+
+TEXT [font_size=12, bold]: 5 - 5 - نحوه واریز سهم هر یک از اعضا به حساب مربوطه؛
+
+TEXT [font_size=12, bold]: 6 - 5 - نحوه انتقال وجوه از حساب بانک عامل به حساب متقاضی؛
+
+TEXT [font_size=12, bold]: 7 - 5 - تعیین کارمزد پیشگام؛
+
+TEXT [font_size=12, bold]: 8 - 5 - تعیین کارمزد عاملیت و سهم هر یک از اعضا بـرای تـأمین
+
+TEXT [font_size=12, bold]: آن و نحوه و زمان پرداخت آن؛
+
+TEXT [font_size=12, bold]: 9 - 5 - نحوه توزیع درآمد های حاصل از تسهیلات سندیکایی ) سود
+
+TEXT [font_size=12, bold]: و کارمزدها (؛
+
+TEXT [font_size=12, bold]: 10 - 5 - چگون گی کناره گیـری هـر یـک از اعضـا و نحـوه انحـلال
+
+TEXT [font_size=12, bold]: سندیکا؛
+
+TEXT [font_size=12, bold]: 11 - 5 - رویه برخورد با اعضا در صورت عدم ایفای تعهدات؛

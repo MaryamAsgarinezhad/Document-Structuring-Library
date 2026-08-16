@@ -30,7 +30,7 @@ from ..parser.types import Block, BlockKind, ParsedDocument
 from ..schema import StructuredDocument
 from .builder import DocumentBuilder
 from .chunking import Chunk, chunk_blocks
-from .ops import ChunkResult
+from .ops import ChunkOp, ChunkResult, NewHeading, NewParagraph
 
 _DEFAULT_BASE_URL = "https://ai-gateway.mohaymen.ir/v1"
 _DEFAULT_MODEL = "openai/gpt-4o"
@@ -62,12 +62,12 @@ never merged with its neighbors just because none of them end in punctuation.
 Ignore, and never emit any operation for:
 - A block whose entire content is just a page number (a bare number, optionally with surrounding dashes
   or dots, e.g. "5", "- 12 -") — this is not document content.
-- A running header or footer: a short phrase that recurs verbatim at the top (or bottom) of page after
-  page throughout the document — typically the document's own title/letterhead repeated everywhere, not
-  a fresh paragraph or heading each time. A chunk long enough to span multiple pages will often show this
-  same exact phrase reappearing more than once; treat every occurrence as page furniture to skip, not as
-  new content — including a single occurrence you recognize as this kind of running letterhead text even
-  if it only appears once in the current chunk.
+- A block that is the document's running header, printed on nearly every page: "بخشنامه های مدیریت کل
+  مقررات، مجوزهای بانکی و مبارزه با پولشویی سال 1391". PDF text extraction sometimes reorders or garbles
+  its characters (e.g. digits/words out of order, stray isolated letters), so match it by recognizing the
+  same words in roughly the same combination, not by requiring an exact character-for-character match.
+  Skip it in every form it appears in, including inside a table-of-contents list — never emit a paragraph
+  (or any other) operation for it, and never merge it into a neighboring paragraph.
 
 Treat a (possibly merged) span as a "heading" ONLY when it plausibly functions as a title/section label on
 its own: a standalone label, PLUS at least one supporting signal — larger font_size than surrounding
@@ -83,8 +83,20 @@ alone, use them whenever present:
   currently open in the breadcrumb.
 - "ماده" marks a legal Article — it normally nests directly under the currently open بخش/فصل, at whatever
   level comes after that in the breadcrumb.
-- "تبصره" marks a Note/clause that belongs to the ماده immediately preceding it — nest it ONE LEVEL DEEPER
-  than that ماده, as its child, not as its sibling.
+- Numbered بند/زیربند items read their parent from their OWN numeric prefix, not from whichever heading
+  happens to be currently open. The hierarchy is ماده → بند → زیربند: for numbering like "2-2", the first
+  segment (2) is the ماده number and the second segment (2) is the بند number within that ماده — nest it as
+  a child (بند) of ماده 2. For numbering like "2-2-1", "2-2-2", "2-2-3", ..., the first two segments ("2-2")
+  identify the parent بند, and the last segment (1, 2, 3, ...) is just the sequential زیربند number within
+  that بند — nest each of these as a child (زیربند) of بند 2-2, i.e. two levels under ماده 2. Every entry
+  sharing the same leading segments (e.g. everything starting "2-2-") is a sibling at that same زیربند
+  level under that one بند, regardless of what else appeared in the text between them.
+- "تبصره" marks a Note/clause. It is its own structural element, NOT the parent of any numbered بند/زیربند
+  items that happen to follow it in the text — those still nest strictly by their own numeric prefix as
+  described above, never as children of a تبصره. Nest the تبصره itself ONE LEVEL DEEPER than, and as a
+  child of, whichever ماده or بند it is actually attached to by its position in the document (normally the
+  ماده, or the specific numbered بند, whose text it immediately follows) — not automatically the outermost
+  or most-recently-opened ماده if a more specific بند is the one it's really commenting on.
 
 For the CURRENT CHUNK ONLY, emit a list of operations, in the same order the content appears:
 - "heading": as described above. Infer its nesting level (1 = top-level) from the signals above and from
@@ -99,9 +111,18 @@ Rules:
 - Only emit operations for content that is actually in the current chunk. Never repeat content already
   covered by earlier chunks (you only see their headings, as a breadcrumb, not their full text).
 - Some blocks at the start of a chunk are marked "[CONTEXT - already covered by the previous chunk, do
-  NOT emit an operation for this]". They are shown only so you can see what immediately precedes the new
-  content, to correctly judge whether the new content continues the same paragraph/section or starts a
-  new one. Never emit a heading/paragraph/table operation for a block marked this way.
+  NOT emit an operation for this]". Normally, do NOT emit a heading/paragraph/table operation for a block
+  marked this way — they're shown only so you can see what immediately precedes the new content, to
+  correctly judge whether the new content continues the same paragraph/section or starts a new one.
+  EXCEPTION: the previous chunk can occasionally fail to actually cover a block despite it being shown to
+  you as context — check CONTEXT blocks against "Currently open headings" above. If a CONTEXT block
+  plausibly functions as a heading (by the same signals as elsewhere: standalone label, larger font/bold,
+  numbering/ماده/تبصره) but is NOT the innermost (last) entry in "Currently open headings", the previous
+  chunk did not actually capture it as a heading — emit it yourself, as a new heading at the correct
+  nesting level, instead of silently skipping it, since otherwise everything nested under it in this
+  chunk would attach one level too shallow. Likewise, if a non-heading CONTEXT block is an unfinished
+  sentence that your chunk's first new block grammatically continues, merge it into your first paragraph
+  the same way you would merge any other wrapped fragment, instead of leaving it stranded.
 - Never invent headings, structure, or content that are not present in this chunk's text, and never
   paraphrase or "clean up" the source text — reproduce it as given, aside from joining wrapped-line
   fragments with a single space as instructed above.
@@ -163,6 +184,21 @@ def _render_breadcrumb(breadcrumb: list[tuple[int, str]]) -> str:
     return " > ".join(f"H{level}:{text}" for level, text in breadcrumb)
 
 
+def _coverage_ratio(chunk: Chunk, operations: list[ChunkOp]) -> float:
+    """Rough heuristic for how much of a chunk's new (non-CONTEXT) content
+    made it into `operations`. Used only to compare repeated attempts at
+    the *same* chunk against each other — not an exact completeness proof:
+    legitimately-skipped page numbers/running headers, and whitespace
+    differences introduced by merging wrapped lines, both push a fully
+    correct response below 1.0. A higher ratio means a more complete
+    response relative to other attempts at the same prompt."""
+    source_chars = sum(len(b.text or "") for b in chunk.new_blocks if b.kind == BlockKind.TEXT)
+    if source_chars == 0:
+        return 1.0
+    covered_chars = sum(len(op.text) for op in operations if isinstance(op, (NewHeading, NewParagraph)))
+    return min(covered_chars / source_chars, 1.0)
+
+
 @dataclass
 class ChunkTrace:
     """One chunk's prompt and outcome, handed to ``on_chunk`` for
@@ -187,6 +223,8 @@ def structure_document(
     overlap_blocks: int = 2,
     on_chunk: Callable[[ChunkTrace], None] | None = None,
     skip_failed_chunks: bool = False,
+    max_attempts_per_chunk: int = 2,
+    completeness_threshold: float = 0.7,
 ) -> StructuredDocument:
     """Build a :class:`StructuredDocument` from ``parsed``, chunk by chunk.
 
@@ -200,17 +238,36 @@ def structure_document(
     identical ops within a small rolling window as a safety net in case it
     does anyway.
 
-    ``on_chunk``, if given, is called once per chunk (success or failure)
-    with a :class:`ChunkTrace` — for troubleshooting which chunk produced a
-    given piece of output, or none at all.
+    ``max_attempts_per_chunk`` / ``completeness_threshold``: a chunk's
+    response can silently under-cover its content even though it parses
+    fine — verified directly against the live gateway that a single chunk
+    with several varied blocks (a paragraph, a heading, another paragraph)
+    can come back with just one operation covering the first few blocks and
+    nothing else, no error raised. This is a model reliability gap, not
+    reliably fixed by prompt wording alone (multiple prompt-only attempts
+    still showed it — see README's "Known limitations"). After each
+    attempt, ``_coverage_ratio`` compares the resolved operations' text
+    against the chunk's source blocks; if the ratio is below
+    ``completeness_threshold``, the chunk is retried — a fresh,
+    independently-sampled call, not a continuation — up to
+    ``max_attempts_per_chunk`` times, keeping whichever attempt scored
+    highest. An attempt that raises (e.g. a malformed-output validation
+    failure) also counts as a reason to retry rather than an immediate
+    failure, so this doubles as resilience against that failure class too.
+    This is a heuristic that improves the odds of a complete result by
+    resampling — it does not verify completeness exactly, and doesn't
+    eliminate the failure mode, only reduces its frequency.
 
-    ``skip_failed_chunks``: by default, a chunk that raises (a model output
-    validation failure, a transient network error, ...) propagates and
-    aborts the whole run. On a long document a single bad chunk out of many
-    is disproportionately costly to lose everything over, so set this to
-    ``True`` to log the failure via ``on_chunk`` and continue with the next
-    chunk instead — that chunk's content is then simply missing from the
-    result rather than the whole run failing.
+    ``on_chunk``, if given, is called once per chunk (after all attempts
+    for it are done) with a :class:`ChunkTrace` — for troubleshooting which
+    chunk produced a given piece of output, or none at all.
+
+    ``skip_failed_chunks``: by default, a chunk where every attempt raises
+    propagates and aborts the whole run. On a long document a single bad
+    chunk out of many is disproportionately costly to lose everything over,
+    so set this to ``True`` to log the failure via ``on_chunk`` and
+    continue with the next chunk instead — that chunk's content is then
+    simply missing from the result rather than the whole run failing.
     """
     resolved_model = model if model is not None else default_model()
     agent: Agent[None, ChunkResult] = Agent(
@@ -224,16 +281,30 @@ def structure_document(
             f"Currently open headings: {_render_breadcrumb(builder.breadcrumb(max_items=5))}\n\n"
             f"Current chunk:\n{_render_chunk(chunk)}"
         )
-        try:
-            result = agent.run_sync(prompt)
-        except Exception as exc:
+
+        best_result: ChunkResult | None = None
+        best_ratio = -1.0
+        last_error: Exception | None = None
+        for _attempt in range(max_attempts_per_chunk):
+            try:
+                result = agent.run_sync(prompt)
+            except Exception as exc:  # noqa: BLE001 - retried below; re-raised only if every attempt fails
+                last_error = exc
+                continue
+            ratio = _coverage_ratio(chunk, result.output.operations)
+            if ratio > best_ratio:
+                best_result, best_ratio = result.output, ratio
+            if ratio >= completeness_threshold:
+                break
+
+        if best_result is None:
             if on_chunk is not None:
-                on_chunk(ChunkTrace(index=index, chunk=chunk, prompt=prompt, result=None, error=exc))
+                on_chunk(ChunkTrace(index=index, chunk=chunk, prompt=prompt, result=None, error=last_error))
             if skip_failed_chunks:
                 continue
-            raise
+            raise last_error
 
-        chunk_result = result.output
+        chunk_result = best_result
         if on_chunk is not None:
             on_chunk(ChunkTrace(index=index, chunk=chunk, prompt=prompt, result=chunk_result, error=None))
         if chunk_result.title:

@@ -1,0 +1,1 @@
+ModelHTTPError: status_code: 400, model_name: openai/gpt-4o, body: {'message': 'Budget has been exceeded! Current cost: 10.144882782428, Max budget: 10.0', 'type': 'budget_exceeded', 'param': None, 'code': '400'}

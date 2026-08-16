@@ -43,6 +43,10 @@ def main() -> None:
     parser.add_argument("--out-dir", type=Path, default=ROOT / "data", help="Where to write <stem>.structured.json / .md")
     parser.add_argument("--max-chars-per-chunk", type=int, default=8000)
     parser.add_argument("--overlap-blocks", type=int, default=2)
+    parser.add_argument(
+        "--max-attempts-per-chunk", type=int, default=2, help="Retry a chunk (fresh sample) if under-covered"
+    )
+    parser.add_argument("--completeness-threshold", type=float, default=0.7)
     args = parser.parse_args()
 
     out_stem = args.pdf_path.stem
@@ -79,6 +83,8 @@ def main() -> None:
         overlap_blocks=args.overlap_blocks,
         on_chunk=on_chunk,
         skip_failed_chunks=True,
+        max_attempts_per_chunk=args.max_attempts_per_chunk,
+        completeness_threshold=args.completeness_threshold,
     )
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
