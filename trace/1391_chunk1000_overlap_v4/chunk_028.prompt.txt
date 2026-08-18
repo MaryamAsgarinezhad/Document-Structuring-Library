@@ -1,4 +1,4 @@
-Currently open headings: H1:بخش اول : بخشنامه های مطالعات و مقررات بانکی > H2:دستورالعمل نحوه تشخیص، حذف مطالبات غیرقابل وصول از دفاتر مؤسسه اعتباری و افشای آن در صورت های مالی
+Currently open headings: H1:بخش اول : > H2:بخشنامه های مطالعات و مقررات بانکی > H3:ماده1 - ذخیره عمومی : > H4:ماده3 - ذخیره مطالبات از دولت :
 
 Current chunk:
 [CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=15, bold]: دستورالعمل نحوه تشخیص، حذف مطالبات غیرقابل وصول از

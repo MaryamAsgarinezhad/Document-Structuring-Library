@@ -1,4 +1,4 @@
-Currently open headings: H1:بخش سوم : بخشنامه های مجوزهای بانکی
+Currently open headings: H1:فهرست مطالب > H2:بخش سوم : بخشنامه های مجوزهای بانکی
 
 Current chunk:
 [CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12]: بخشنامه شماره 160017 / 91 مورخ 21 /6/ 1391؛ صدور مجوز فعالیت بانک قوامین .................... 293

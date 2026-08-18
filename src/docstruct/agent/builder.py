@@ -9,10 +9,17 @@ chunk at a time.
 
 from __future__ import annotations
 
+import re
 from collections import deque
 
 from ..schema import Section, StructuredDocument, TableData
 from .ops import ChunkOp, NewHeading, NewParagraph, NewTable
+
+# Matches a legal-Article marker like "ماده1", "ماده 2 -", "ماده12" at the start of a heading's text.
+# The model is asked to nest a new ماده at the same level as its most recent sibling ماده, but doesn't
+# always get that right (it re-derives each chunk's structure independently, with no real memory of past
+# chunks) — so it's enforced here deterministically instead of trusted from the model's own `level`.
+_MADDEH_PATTERN = re.compile(r"^\s*ماده\s*[0-9۰-۹٠-٩]+")
 
 # How many recently-applied ops to remember for duplicate detection. This is
 # a rolling window, not a whole-document set, on purpose: it exists to catch
@@ -58,10 +65,17 @@ class DocumentBuilder:
             self._apply_table(op)
 
     def _apply_heading(self, op: NewHeading) -> None:
-        while self._open_sections and self._open_sections[-1].level >= op.level:
+        level = op.level
+        if _MADDEH_PATTERN.match(op.text):
+            for section in reversed(self._open_sections):
+                if _MADDEH_PATTERN.match(section.heading):
+                    level = section.level
+                    break
+
+        while self._open_sections and self._open_sections[-1].level >= level:
             self._open_sections.pop()
 
-        section = Section(heading=op.text, level=op.level)
+        section = Section(heading=op.text, level=level)
         parent = self._open_sections[-1] if self._open_sections else None
         if parent is not None:
             parent.subsections.append(section)

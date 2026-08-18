@@ -1,4 +1,4 @@
-Currently open headings: H1:بخش اول : بخشنامه های مطالعات و مقررات بانکی > H2:دستورالعمل نحوه تشخیص، حذف مطالبات غیرقابل وصول از دفاتر مؤسسه اعتباری و افشای آن در صورت های مالی > H3:ماده1 - تعاریف :
+Currently open headings: H1:بخش اول : > H2:ماده1 - تعاریف :
 
 Current chunk:
 [CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=11, bold]: 3 - 1 - تسهیلات : تسهیلات ) اعم از ریالی و ارزی ( شامل تسهیلات اعطایی به اشخاص

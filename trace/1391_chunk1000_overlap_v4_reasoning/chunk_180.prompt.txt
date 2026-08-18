@@ -1,0 +1,52 @@
+Currently open headings: H1:بخشنامه های مدیریت کل مقررات، مجوزهای بانکی و مبارزه با پولشویی سال 1391 > H2:ماده5 - نکات لازم الرعایه در مشارکت نامه : > H3:ماده6 - نکات لازم الرعایه در قرارداد تسهیلات سندیکایی > H4:3 - 6 - اطلاعات اولیه در خصوص طرف های قرارداد؛
+
+Current chunk:
+[CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12, bold]: و روش های بازپرداخت، روش های تضمین، شرایط تمدیـد
+
+[CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12, bold]: سررسید؛
+
+TEXT [font_size=11, bold]: 5 - 6 - سقف تسهیلات و برنامه زمانی توافق شده بـرای انتقـال وجـوه
+
+TEXT [font_size=11, bold]: توسط ا عضا ؛
+
+TEXT [font_size=12, bold]: 6 - 6 - پیش شرط ها و الزامات برای اعطای تسهیلات و انتقال آن از
+
+TEXT [font_size=12, bold]: حساب تعیین شده ؛
+
+TEXT [font_size=12, bold]: 7 - 6 - شناسایی انواع هزینه های مرتبط با فر آ یند اعطای تسهیلات
+
+TEXT [font_size=12, bold]: سندیکایی حق ) العمل /ها کارمزدهـا ، ( تعیـین نـرخ، شـیوه و
+
+TEXT [font_size=12, bold]: زمان پرداخت آن ها؛
+
+TEXT [font_size=12, bold]: 8 - 6 - تعهد متقاضی مبنـی بـر پرداخـت بـه موقـع اصـل و سـود
+
+TEXT [font_size=12, bold]: تسهیلات به مؤسسه اعتباری عامل؛
+
+TEXT [font_size=12]: 142
+
+TEXT [font_size=12]: بخشنامه های مدیریت کل مقررات، مجوزهای بانکی و مبارزه با پولشویی سال 1391
+
+TEXT [font_size=12, bold]: 9 - 6 - تعهدات غیرمالی مبنی بـر ایجـاد محـدودیت در واگـذاری
+
+TEXT [font_size=12, bold]: دارایی ها، تغییر در موضوع فعالیت، افشای اطلاعات واقعـی
+
+TEXT [font_size=12, bold]: ـ به طور شفاف ـ و مصرف تسهیلات مطابق قرارداد؛
+
+TEXT [font_size=12, bold]: 10 - 6 - تعیین قانون حاکم در شرایطی که متقاضی / یک یا تعـدادی
+
+TEXT [font_size=12, bold]: ازاعضای سندیکا،خارجی است ؛
+
+TEXT [font_size=12, bold]: 11 - 6 - شرایط تس ویه؛
+
+TEXT [font_size=12, bold]: 12 - 6 - قوانین مرتبط و سایر مستندات تکمیلی .
+
+TEXT [font_size=11, bold]: ماده7 - مدیریت تسهیلات سندیکایی :
+
+TEXT [font_size=12, bold]: 1 - 7 - ًمدیریت وجـوه تسـهیلات صـرفا بـر عهـده بانـک عامـل
+
+TEXT [font_size=12, bold]: می باشد، لیکن
+
+TEXT [font_size=12, bold]: دیگر وظا یف به استناد توافق انجام شده در مشـارکت نامـه از
+
+TEXT [font_size=12, bold]: سوی بانک عامل قابل تفویض به سایر اعضا می . شد با تفویض

@@ -185,7 +185,14 @@ alone, use them whenever present:
   3 levels deep) and nest it that many levels under whichever unnumbered section (e.g. a "فصل"/"بخش") is
   currently open in the breadcrumb.
 - "ماده" marks a legal Article — it normally nests directly under the currently open بخش/فصل, at whatever
-  level comes after that in the breadcrumb.
+  level comes after that in the breadcrumb. A new ماده is a SIBLING of the most recent other ماده, always
+  — scan the whole breadcrumb (not just its innermost/last entry) for the most recent heading that is
+  itself a ماده, and reuse that exact level, no matter how many بند/زیربند/تبصره levels have opened and
+  closed since then. Do NOT derive a new ماده's level from "one level shallower than whatever is currently
+  innermost" — that default is only a coincidence when the innermost open heading happens to be a direct
+  sibling, and gives the wrong (too-deep) level whenever the previous ماده's own بند/زیربند/تبصره content
+  is still open. If no ماده appears anywhere in the breadcrumb, fall back to nesting it directly under the
+  currently open بخش/فصل as before.
 - Numbered بند/زیربند items read their parent from their OWN numeric prefix, not from whichever heading
   happens to be currently open. The hierarchy is ماده → بند → زیربند: for numbering like "2-2", the first
   segment (2) is the ماده number and the second segment (2) is the بند number within that ماده — nest it as

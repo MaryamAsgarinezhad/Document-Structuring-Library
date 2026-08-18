@@ -1,0 +1,44 @@
+Currently open headings: H1:الف- مستندات قانونی :
+
+Current chunk:
+[CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12, bold]: 4 - ماده )5 (آئین نامه اجرائی فصل پنجم قانون عملیات بانکی بدون ربا ) بهره ( ) تصویب نامه
+
+[CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12, bold]: شماره 88528 هیأت وزیران، مصوب17 / 12 / 1362 (؛
+
+TEXT [font_size=12, bold]: 5 - ماده واحده قانون طرز استفاده از تبصره2 ماده )12 ( قانون پولی و بانکی کشور، مصوب
+
+TEXT [font_size=12, bold]: 12 / 12 / 1354؛
+
+TEXT [font_size=12, bold]: 6 - ) ادوم5 ( ،) 39 (، ) 43 ( و)76 (و تبصره ذیل ماده )76 ( قانون محاسـبات عمـومی کشـور
+
+TEXT [font_size=12, bold]: مصوب سال 1366 ؛
+
+TEXT [font_size=11, bold]: 7 - بند “ب” ماده واحده قانون نحوه اجرا ی مقررات قانون یپول و بانک ی کشور در بانک سـپه
+
+TEXT [font_size=12, bold]: مصوب 19 / 12 / 1353؛
+
+TEXT [font_size=12, bold]: 8 - ماده واحده و تبصره های ذیل قانون فهرسـت نهادهـا و مؤسسـات عمـومی غیردولتـی
+
+TEXT [font_size=12, bold]: مصوب 19 / 4 / 1373 به علاوه الحاقیه های آن .
+
+TEXT [font_size=12, bold]: ب- تعاریف
+
+TEXT [font_size=11, bold]: ماده1 - اصطلاحاتی که در این دستورالعمل به کار رفته اسـت دارای معـانی مشـروح زیـر
+
+TEXT [font_size=12, bold]: می باشد :
+
+TEXT [font_size=11, bold]: 1 - 1 - بانک مرکزی : بانک مرکزی جمهوری اسلامی ایران .
+
+TEXT [font_size=11, bold]: 2 - 1 - مؤسسات اعتباری بانک : ها و مؤسسات اعتباری غیربانکی که به موجب قانون تأسـیس
+
+TEXT [font_size=12, bold]: شده و یا مجوز خود را از بانک مرکزی دریافت نموده و تحت نظـارت ایـن بانـک
+
+TEXT [font_size=11, bold]: قرار دارند .
+
+TEXT [font_size=12]: 177
+
+TEXT [font_size=12]: بخشنامه های مدیریت کل مقررات، مجوزهای بانکی و مبارزه با پولشویی سال 1391
+
+TEXT [font_size=11, bold]: 3 - 1 - سازمان های مشمول : وزارت خانه ها، بنگاه ها، مؤسسات، شرکت ها و سازمان های دولتـی و
+
+TEXT [font_size=11, bold]: مؤسسات و نهادهای عمومی غیردولتی می باشند .

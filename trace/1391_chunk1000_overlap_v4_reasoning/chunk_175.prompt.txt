@@ -1,0 +1,54 @@
+Currently open headings: H1:بخشنامه های مدیریت کل مقررات، مجوزهای بانکی و مبارزه با پولشویی سال 1391 > H2:بخشنامه شماره166503 / 91 مورخ29 / 06 / 1391 ; ابلاغ دستورالعمل ناظر بر تسهیلات سندیکایی > H3:ماده2 - وظایف مؤسسه اعتباری پیشگام
+
+Current chunk:
+[CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12, bold]: اطلاعات .
+
+[CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12, bold]: 4 - 2 - ارجاع مجموعه اطلاعـات گـردآوری و پـردازش شـده بـه
+
+TEXT [font_size=12, bold]: متقاضی به منظور رؤیت و نیز اخذ تأییدیه کتبی از وی مبنـی
+
+TEXT [font_size=12, bold]: بر معتبر و کامل بودن آن ها؛
+
+TEXT [font_size=12, bold]: 5 - 2 - ارسال دعوت نامـه بـرای مؤسسـات اعتبـاری کـه احتمـال
+
+TEXT [font_size=12, bold]: مشارکت آن ها در این تسهیلات وجود دارد، به انضمام :
+
+TEXT [font_size=12, bold]: • کلیه اطلاعات دریـافتی مربـوط بـه متقاضـی ) بـه طـور
+
+TEXT [font_size=12, bold]: منصفانه (؛
+
+TEXT [font_size=12, bold]: • نسخه ای از متن تعهدنامه ) مبنـی بـر اعـلام موافقـت
+
+TEXT [font_size=12, bold]: اعضای سندیکا با سهم تعیین شده بـرای هـر یـک از
+
+TEXT [font_size=12, bold]: آن ها از کل تسهیلات مـورد درخواسـت متقاضـی ( ، بـه
+
+TEXT [font_size=12, bold]: منظور تکمیل و امضای آن توسط اعضا؛
+
+TEXT [font_size=12, bold]: • شرایط مربوط به اعطای تسهیلات و نحوه بازپرداخت
+
+TEXT [font_size=12, bold]: آن؛
+
+TEXT [font_size=12, bold]: • سـایر مسـتندات لازم بـرای شـفاف سـازی موضـوع
+
+TEXT [font_size=12, bold]: تسهیلات .
+
+TEXT [font_size=12, bold]: 6 - 2 - اتخاذ تدابیر لازم بـرای امضـای قـرارداد، بـین تسـهیلات
+
+TEXT [font_size=12, bold]: گیرنده و اعضای سندیکا؛
+
+TEXT [font_size=12, bold]: 7 - 2 - همکاری با مؤسسه اعتبـاری عامـل در خصـوص مـدیریت
+
+TEXT [font_size=12, bold]: تسهیلات و نیز شناسایی به موقع مشکلات احتمالی و اعلام
+
+TEXT [font_size=12, bold]: کتبی آن به اعضای سندیکا در اسرع وقت؛
+
+TEXT [font_size=12, bold]: 8 - 2 - سایر مسئولیت های پیش بینی شده در مشارکت نامه .
+
+TEXT [font_size=12]: 138
+
+TEXT [font_size=12]: بخشنامه های مدیریت کل مقررات، مجوزهای بانکی و مبارزه با پولشویی سال 1391
+
+TEXT [font_size=11, bold]: ماده3 - وظایف مؤسسه اعتباری عامل
+
+TEXT [font_size=12, bold]: مؤسسه اعتباری عامل ملزم به انجام وظایف ذیل می باشد :

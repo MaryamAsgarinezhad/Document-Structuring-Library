@@ -1,4 +1,4 @@
-Currently open headings: H1:بخش دوم : بخشنامه های مبارزه با پولشویی
+Currently open headings: H1:فهرست مطالب
 
 Current chunk:
 [CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12]: بخشنامه شماره 141997 / 91 مورخ 31 /5/ 1391 درخصوص ایجاد قابلیت در سامانه های بانکی ............. 281

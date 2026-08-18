@@ -1,4 +1,4 @@
-Currently open headings: H1:بخش اول : بخشنامه های مطالعات و مقررات بانکی > H2:دستورالعمل نحوه تشخیص، حذف مطالبات غیرقابل وصول از دفاتر مؤسسه اعتباری و افشای آن در صورت های مالی > H3:2 - 2 - ترکیب اعضای کمیته
+Currently open headings: H1:بخش اول : > H2:ماده1 - تعاریف : > H3:ماده2 - ترکیب، ساختار و وظایف کمیته :
 
 Current chunk:
 [CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12, bold]:  یک نفر از اعضای کمیته حسابرسی به تشخیص و انتخاب کمیته حسابرسی؛

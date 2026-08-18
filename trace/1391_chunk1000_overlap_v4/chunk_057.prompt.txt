@@ -1,4 +1,4 @@
-Currently open headings: H1:بخش اول : بخشنامه های مطالعات و مقررات بانکی > H2:دستورالعمل حسابداری کارت اعتباری میزان برای کارکنان دولت و کارگران > H3:ب ـ ثبت های حسابداری وثایق :
+Currently open headings: H1:»دستورالعمل حسابداری کارت اعتباری میزان برای کارکنان دولت و کارگران « > H2:ب ـ ثبت های حسابداری وثایق :
 
 Current chunk:
 [CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=11, bold]: ب ـ ثبت های حسابداری وثایق :

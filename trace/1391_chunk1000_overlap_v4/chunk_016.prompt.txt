@@ -1,4 +1,4 @@
-Currently open headings: H1:بخش دوم : بخشنامه های مبارزه با پولشویی
+Currently open headings: H1:فهرست مطالب
 
 Current chunk:
 [CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12]: ................................ ................................ ................................ ............. 288

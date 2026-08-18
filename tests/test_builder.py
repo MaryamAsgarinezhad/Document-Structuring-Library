@@ -111,6 +111,38 @@ def test_duplicate_heading_is_dropped_and_open_section_stays_the_same():
     assert doc.sections[0].paragraphs == ["متن"]
 
 
+def test_maddeh_heading_is_forced_to_match_its_still_open_sibling_level():
+    b = DocumentBuilder()
+    b.apply(NewHeading(level=1, text="دستورالعمل"))
+    b.apply(NewHeading(level=4, text="ماده1 - تعاریف :"))
+    b.apply(NewHeading(level=6, text="بند ۱-۲"))  # nested deeper under ماده1
+    # model mis-levels this as 5 instead of 4, but it's still a ماده sibling reachable in the open chain
+    b.apply(NewHeading(level=5, text="ماده2 - ترکیب :"))
+    b.apply(NewParagraph(text="متن ماده۲"))
+
+    doc = b.build()
+
+    maddeh1 = doc.sections[0].subsections[0]
+    maddeh2 = doc.sections[0].subsections[1]
+    assert maddeh1.heading == "ماده1 - تعاریف :"
+    assert maddeh2.heading == "ماده2 - ترکیب :"
+    assert maddeh1.level == maddeh2.level == 4
+    assert maddeh2.paragraphs == ["متن ماده۲"]
+
+
+def test_maddeh_heading_keeps_its_own_level_when_no_sibling_is_open():
+    b = DocumentBuilder()
+    b.apply(NewHeading(level=1, text="دستورالعمل اول"))
+    b.apply(NewHeading(level=4, text="ماده1 - قدیمی :"))
+    b.apply(NewHeading(level=1, text="دستورالعمل دوم"))  # closes out دستورالعمل اول entirely
+    b.apply(NewHeading(level=3, text="ماده1 - جدید :"))
+
+    doc = b.build()
+
+    assert doc.sections[1].subsections[0].heading == "ماده1 - جدید :"
+    assert doc.sections[1].subsections[0].level == 3
+
+
 def test_breadcrumb_reflects_currently_open_path():
     b = DocumentBuilder()
     b.apply(NewHeading(level=1, text="فصل اول"))

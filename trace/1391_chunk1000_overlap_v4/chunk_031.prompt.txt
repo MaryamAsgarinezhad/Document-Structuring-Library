@@ -1,4 +1,4 @@
-Currently open headings: H1:بخش اول : بخشنامه های مطالعات و مقررات بانکی > H2:دستورالعمل نحوه تشخیص، حذف مطالبات غیرقابل وصول از دفاتر مؤسسه اعتباری و افشای آن در صورت های مالی > H3:7 - 2 - دبیرخانه کمیته، موظف به انجام وظایف زیر است :
+Currently open headings: H1:بخش اول : > H2:ماده1 - تعاریف : > H3:ماده2 - ترکیب، ساختار و وظایف کمیته :
 
 Current chunk:
 [CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12, bold]:  فراهم آوردن مقدمات تشکیل جلسه کمیته و دعوت از اعضای آن ؛

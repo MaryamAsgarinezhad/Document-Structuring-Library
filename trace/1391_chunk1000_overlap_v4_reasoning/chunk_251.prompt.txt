@@ -1,0 +1,52 @@
+Currently open headings: H1:»دس تورالعمل تعیین نسبت تعهدات و بدهی های ارزی به دارایی های ارزی « > H2:ماده1 ـ در این دستورالعمل عبارات ذیل در معانی مشروح بکار می روند :
+
+Current chunk:
+[CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12, bold]: اعتباری که در نتیجه وقوع رویدادهای ارزی گذشته ایجاد و در بنـد )2 - 1 -
+
+[CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12, bold]: 2 (این دستورالعمل احصاء شده اند .
+
+TEXT [font_size=11, bold]: 1 - 6 - نسبت : نسبت مجموع تعهدات و بدهی هـای ارزی بـه خـالص دارایـی هـای
+
+TEXT [font_size=12, bold]: ارزی .
+
+TEXT [font_size=11, bold]: ماده2 ـ مؤسسه اعتباری موظف است، نسبت موضوع این دسـتورالعمل را بـه شـرح زیـر
+
+TEXT [font_size=12, bold]: محاسبه نماید :
+
+TEXT [font_size=12]: 192
+
+TEXT [font_size=12]: بخشنامه های مدیریت کل مقررات، مجوزهای بانکی و مبارزه با پولشویی سال 1391
+
+TEXT [font_size=11, bold]: 2 - 1 - اجزای تشکیل دهنده صورت نسبت، شامل بـدهی هـا و تعهـدات ارزی بـه
+
+TEXT [font_size=11, bold]: شرح زیر می باشد :
+
+TEXT [font_size=10, bold]: 2 - 1 - 1 - بدهی های ارزی :
+
+TEXT [font_size=10, bold]: کد حساب عنوان حساب
+
+TEXT [font_size=11, bold]: 0020 / 2 / 3 سپرده های قرض الحسنه جاری / ارزی
+
+TEXT [font_size=11, bold]: 0065 / 2 / 3 سپرده های قرض الحسنه پس انداز سکه
+
+TEXT [font_size=11, bold]: 0070 / 2 / 3 سپرده پس انداز ارزی
+
+TEXT [font_size=11, bold]: 0110 / 2 / 3 سپرده مدت دار ارزی
+
+TEXT [font_size=11, bold]: 0175 / 2 / 3 سپرده های ارزی دیداری بانک مرکزی
+
+TEXT [font_size=11, bold]: 0180 / 2 / 3 سپرده های ارزی دیداری بانک های ایرانی
+
+TEXT [font_size=11, bold]: 0190 / 2 / 3 سپرده های ارزی دیداری بانک های خارجی
+
+TEXT [font_size=11, bold]: 0195 / 2 / 3 سپرده های ارزی مدت دار بانک مرکزی
+
+TEXT [font_size=11, bold]: 0200 / 2 / 3 سپرده های ارزی مدت دار بانک های ایرانی
+
+TEXT [font_size=11, bold]: 0210 / 2 / 3 سپرده های ارزی مدت دار بانک های خارجی
+
+TEXT [font_size=11, bold]: 0215 / 2 / 3 سپرده های ارزی شعب خارج
+
+TEXT [font_size=11, bold]: 0270 / 2 / 3 بدهی به شعب خارج در حساب جاری
+
+TEXT [font_size=11, bold]: 0275 / 2 / 3 تسهیلات دریافتی از شعب خارج بابت یوزانس های داخلی

@@ -1,0 +1,54 @@
+Currently open headings: H1:بخشنامه های مدیریت کل مقررات، مجوزهای بانکی و مبارزه با پولشویی سال 1391 > H2:بخشنامه شماره166503 / 91 مورخ29 / 06 / 1391 ; ابلاغ دستورالعمل ناظر بر تسهیلات سندیکایی > H3:ماده2 - وظایف مؤسسه اعتباری پیشگام
+
+Current chunk:
+[CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=11, bold]: ماده2 - وظایف مؤسسه اعتباری پیشگام
+
+[CONTEXT - already covered by the previous chunk, do NOT emit an operation for this] TEXT [font_size=12, bold]: مؤسسه اعتب اری پیشگام ملزم به انجام وظایف ذیل است :
+
+TEXT [font_size=12, bold]: 1 - 2 - ایجاد و سامان دهی امور مربوط به تسهیلات سندیکایی؛
+
+TEXT [font_size=12, bold]: 2 - 2 - مذاکره با متقاضی در خصوص :
+
+TEXT [font_size=12, bold]: • موارد مصرف تسهیلات؛
+
+TEXT [font_size=12, bold]: • شرایط تسهیلات ) نرخ سود، سررسید، نوع تضمین هـا،
+
+TEXT [font_size=12, bold]: شرایط برداشت و شیوه های بازپرداخـت و هزینـه هـای
+
+TEXT [font_size=12, bold]: مرتبط (؛
+
+TEXT [font_size=12, bold]: 3 - 2 - شناسایی متقاضـی و امکـان سـنجی طـرح پیشـنهادی بـا
+
+TEXT [font_size=12, bold]: اســتفاده از مجموعــه ای از اطلاعــات در چــارچوب مفــاد
+
+TEXT [font_size=12, bold]: دســتورالعمل چگــونگی شناســایی مشــتریان و مجموعــه
+
+TEXT [font_size=12, bold]: رهنمودها برای مدیریت مـؤثر ریسـک اعتبـاری ) موضـوع
+
+TEXT [font_size=12, bold]: بخشــنامه هــای شــماره 3118 / ه مــورخ30 / 6 / 1387 و
+
+TEXT [font_size=12, bold]: مب /1548 مورخ19 / 4 / 1386 ( به ویژه در موارد ذیل :
+
+TEXT [font_size=12, bold]: • می زان برخورداری متقاضی از شرایط اولیه برای دریافت
+
+TEXT [font_size=12, bold]: تسهیلات سندیکایی؛
+
+TEXT [font_size=12, bold]: • وضعیت حقوقی و مالی متقاضی؛
+
+TEXT [font_size=12, bold]: • تجزیه و تحلیل گردش وجوه متقاضی؛
+
+TEXT [font_size=12, bold]: • ارائه اطلاعات کلی درباره ضامن یا وثایق؛
+
+TEXT [font_size=12, bold]: • بررسی وضعیت ریسک اعتباری متقاضی ؛
+
+TEXT [font_size=12, bold]: • ارائه مستندات مربوط به طرح؛
+
+TEXT [font_size=12]: 137
+
+TEXT [font_size=12]: بخشنامه های مدیریت کل مقررات، مجوزهای بانکی و مبارزه با پولشویی سال 1391
+
+TEXT [font_size=12, bold]: • حصول اطمینان از صحت، اعتبـار و کامـل بـودن کلیـه
+
+TEXT [font_size=12, bold]: اطلاعات .
+
+TEXT [font_size=12, bold]: 4 - 2 - ارجاع مجموعه اطلاعـات گـردآوری و پـردازش شـده بـه
