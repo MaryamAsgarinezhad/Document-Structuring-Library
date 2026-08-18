@@ -12,6 +12,11 @@ hardcoded to a specific vendor:
   project's LiteLLM gateway).
 - ``DOCSTRUCT_API_KEY``: API key for that gateway.
 - ``DOCSTRUCT_MODEL``: model id as listed by the gateway's ``/v1/models``.
+- ``DOCSTRUCT_REASONING_EFFORT``: optional. For a reasoning-capable model, ``"none"`` disables its hidden
+  chain-of-thought tokens (which otherwise multiply per-chunk latency for no benefit on this small-output,
+  structured-extraction task). Sent as both ``reasoning_effort`` and OpenRouter-style
+  ``reasoning: {"enabled": false}`` in the request body, since gateways differ on which field they honor.
+  Unset by default, so a model's own default reasoning behavior applies.
 """
 
 from __future__ import annotations
@@ -23,7 +28,7 @@ from dataclasses import dataclass
 
 from pydantic_ai import Agent
 from pydantic_ai.models import Model
-from pydantic_ai.models.openai import OpenAIChatModel
+from pydantic_ai.models.openai import OpenAIChatModel, OpenAIChatModelSettings
 from pydantic_ai.providers.openai import OpenAIProvider
 
 from ..parser.types import Block, BlockKind, ParsedDocument
@@ -35,7 +40,78 @@ from .ops import ChunkOp, ChunkResult, NewHeading, NewParagraph
 _DEFAULT_BASE_URL = "https://ai-gateway.mohaymen.ir/v1"
 _DEFAULT_MODEL = "openai/gpt-4o"
 
-_SYSTEM_PROMPT = """\
+# The document's own table of contents (فهرست مطالب, PDF pages 5-9), transcribed once and reused as a
+# fixed reference in every chunk's prompt — see _SYSTEM_PROMPT's "TABLE OF CONTENTS" section for how it's
+# used. It only lists the document's outermost two levels (بخش, بخشنامه); everything deeper is not in it.
+_TABLE_OF_CONTENTS = """\
+بخش اول: بخشنامه های مطالعات و مقررات بانکی
+1. 21270 - ابلاغ «دستورالعمل نحوه تشخیص و حذف مطالبات غیرقابل وصول از دفاتر مؤسسه اعتباری و افشای آن در
+   صورت های مالی» و اصلاح «دستورالعمل نحوه محاسبه ذخیره مطالبات موسسات اعتباری»
+2. 29506 - ابلاغ دستورالعمل حسابداری کارت اعتباری بر پایه عقد مرابحه و کارت میزان
+3. 38094 - تعیین نرخ سود جدید تسهیلات مرابحه از طریق کارت اعتباری میزان
+4. 44341 - ابلاغ مصوبه کمیسیون اعتباری بانک مرکزی در خصوص اجرایی نمودن تسهیلات بیمه
+5. 59912 - ابلاغ دستورالعمل حساب جاری
+6. 62668 - ابلاغ ممنوعیت بلوکه نمودن بخشی از تسهیلات اعطایی به عنوان سپرده
+7. 66711 - اطلاع رسانی بانک ها در خصوص تشکیل کمیسیون مقررات و نظارت مؤسسات اعتباری
+8. 78002 - تاکید بر عندالمطالبه بودن موعد پرداخت مبلغ ضمانت نامه بانکی به ذینفع
+9. 77969 - ابلاغ ضوابط اجرایی تبصره 1 ماده 186 قانون مالیات های مستقیم
+10. 85331 - ابلاغ نرخ های جدید کارمزد خدمات بانکی (ریالی) به شبکه بانکی کشور
+11. 88608 - نحوه محاسبه سود و اقساط در تسهیلات دارای یارانه سود سهم دولت
+12. 91728 - ابلاغ مفاد بند 7-7 ماده واحده قانون بودجه سال 1391 کل کشور
+13. 99844 - لزوم اخذ شماره اقتصادی توسط اشخاص حقیقی و حقوقی
+14. 108312 - تعیین حداقل میزان بازپرداخت بدهی ناشی از خرید کالا از سوی دارنده کارت اعتباری میزان
+15. 108313 - ابلاغ تکالیف بانک های غیردولتی و موسسات اعتباری غیربانکی در قانون بودجه سال 1391
+16. 108314 - ابلاغ تکالیف بانک های دولتی در قانون بودجه سال 1391 کل کشور
+17. 110078 - ابلاغ نرخ های جدید کارمزد خدمات بانکی (ریالی) - پیرو بخشنامه شماره 85331/91
+18. 122342 - ابلاغ بخشنامه ناظر بر نسخه آیین نامه جدید تسهیلات و تعهدات کلان
+19. 130995 - اعلام مصوبه شورای پول و اعتبار درخصوص پذیرش سهام بورسی به عنوان وثیقه
+20. 131164 - نحوه استفاده از خدمات بانکی توسط نابینایان کشور
+21. 143259 - ابلاغ تصویب نامه هیأت وزیران در خصوص اساسنامه صندوق ضمانت سپرده ها
+22. 147874 - ابلاغ حداکثر سقف کارت اعتباری مرابحه در سال 91
+23. 166503 - ابلاغ دستورالعمل ناظر بر تسهیلات سندیکایی
+24. 178901 - ابلاغ نرخ سود تسهیلات کارت اعتباری میزان
+25. 186342 - ابلاغ دستورالعمل حسابداری عقد استصناع و دستورالعمل حسابداری عقد خرید دین
+26. 210843 - ابلاغ دستورالعمل نگاهداری انواع حساب برای دستگاه های اجرایی و مؤسسات دولتی
+27. 212746 - اصلاح ماده 16 دستورالعمل اجرایی کارت اعتباری بر پایه عقد مرابحه
+28. 243110 - ابلاغ دستورالعمل تعیین نسبت تعهدات و بدهی های ارزی به دارایی های ارزی
+29. 244700 - ابلاغ بند (1) صورتجلسه شورای پول و اعتبار در خصوص اعتبار اسنادی داخلی-ریالی
+30. 252693 - ابلاغ اصلاحیه شرایط و ضوابط افتتاح حساب قرض الحسنه ویژه
+31. 253004 - ابلاغ ممنوعیت اخذ هرگونه کارمزد برای دریافت حضوری قبوض از مشتریان
+32. 277102 - ابلاغ ضوابط ناظر بر تعرفه های بانکی اعتبارات اسنادی داخلی-ریالی
+33. 292087 - ابلاغ نسخه نهایی دستورالعمل اجرایی تأسیس و نظارت بر صندوق های قرض الحسنه
+34. 294711 - ابلاغ بند (2) مصوبه شورای پول و اعتبار در خصوص نرخ سود تسهیلات ریالی صادراتی
+35. 294844 - ابلاغ مصوبه کمیسیون مقررات در خصوص الزام درج شرط وصایت در قراردادهای سپرده گیری
+36. 298263 - هشدار به بانک ها و مؤسسات برای رعایت دقیق قوانین و مقررات نظارتی
+37. 306208 - ارسال جدول تسهیلات و تعهدات کلان
+38. 311201 - ابلاغ حداقل ضوابط مشتری معتبر، موضوع تبصره ذیل ماده 12 دستورالعمل حساب جاری
+39. 325334 - ابلاغ مصوبه کمیسیون مقررات در خصوص نحوه صدور کارت هدیه و کارت بن
+40. 332502 - ابلاغ آئین نامه ایجاد یا تعطیل شعبه یا باجه مؤسسات اعتباری در داخل کشور
+41. 343185 - ابلاغ مستثنی شدن طرحهای فولادی سرمایه گذاری شده توسط بخش خصوصی از آیین نامه وصول مطالبات
+42. 352010 - ابلاغ آیین نامه ایجاد و تأسیس شعب بانک های قرض الحسنه مهر ایران و رسالت
+43. 353546 - ابلاغ آیین نامه اجرایی بند (102) قانون بودجه سال 1391 کل کشور
+
+بخش دوم: بخشنامه های مبارزه با پولشویی
+1. 2979 - درخصوص اخذ شماره فراگیر مشتری
+2. 36978 - درخصوص اخذ شماره فراگیر مشتریان
+3. 55597 - درخصوص ایجاد قابلیت در سامانه های بانکی
+4. 75324 - درخصوص لغو استثنای برخی اشخاص در ارائه شناسه ملی
+5. 111131 - درخصوص تاکید بر لغو استثنای برخی اشخاص در ارائه شناسه ملی
+6. 141997 - درخصوص ایجاد قابلیت در سامانه های بانکی
+7. 161337 - درخصوص برنامه نرم افزاری مبارزه با پولشویی
+8. 177911 - درخصوص تاکید بر فراگیری شناسه ملی در کلیه فعالیت های بانک
+9. 202825 - درخصوص شاخص معاملات مشکوک
+10. 213103 - موضوع تاکید بر عدم پرداخت وجه نقد بیش از سقف مقرر
+11. 257835 - موضوع تاکید بر اعمال تغییر در سامانه های بانکی و تهیه نرم افزار مبارزه با پولشویی
+12. 266254 - موضوع معرفی پایگاه اطلاع رسانی مرتبط با شناسه ملی
+13. 282772 - موضوع تاکید بر ایجاد اداره مستقل مبارزه با پولشویی
+14. 340549 - موضوع پرسشنامه اصلاح فرایندهای بانکی و تولید نرم افزارهای مبارزه با پولشویی
+
+بخش سوم: بخشنامه های مجوزهای بانکی
+1. 2123 - اعلام نظر بانک مرکزی درخصوص برنامه تأسیس واحدهای بانکی بانک ها
+2. 160017 - صدور مجوز فعالیت بانک قوامین
+"""
+
+_SYSTEM_PROMPT = f"""\
 You are converting a Persian (Farsi) document into a structured outline, one chunk of the document at a
 time. You do not see the whole document at once, only the current chunk of raw text/table blocks below,
 plus a short breadcrumb of the section headings currently open above this point in the document.
@@ -74,6 +150,33 @@ its own: a standalone label, PLUS at least one supporting signal — larger font
 blocks, bold, or a structural numbering/legal-article pattern (see below). Something that reads like a
 list/table-of-contents entry, or a mid-sentence continuation, is body text, not a heading, regardless of
 length.
+
+TABLE OF CONTENTS — the document's own table of contents, reproduced below as a fixed reference (the same
+text on every chunk, independent of what you're currently looking at). It only lists the two outermost
+structural levels: 3 top-level "بخش" sections (L1), and the numbered "بخشنامه" entries within each (L2,
+identified by their unique number). Nothing deeper (دستورالعمل/فصل/ماده/بند/تبصره titles) is listed here.
+
+{_TABLE_OF_CONTENTS}
+Before applying the signal-based nesting rules below, check whether the current chunk contains a heading
+whose text matches one of the entries above — match primarily by the بخشنامه NUMBER embedded in the
+heading text (numbers survive PDF extraction far more reliably than the surrounding words), falling back
+to matching by title wording only if no number is present. If it matches a "بخش" line, that heading is
+level 1. If it matches a numbered بخشنامه entry, that heading is level 2. Use that level regardless of
+what a local numbering/font/bold signal alone would otherwise suggest. If a heading does NOT match
+anything above — which is normal and expected for everything below a بخشنامه (its internal
+دستورالعمل/فصل titles, ماده, بند, تبصره) — keep using the signal-based rules below to place it, nested
+under whichever بخش/بخشنامه is currently open in the breadcrumb.
+
+EXCEPTION, and it takes priority over the table-matching rule above: if the matching line is itself
+formatted as a table-of-contents/list entry — i.e. it ends in a run of dots/leader characters followed by
+a page number (the same pattern the earlier "table of contents ... is a sequence of SEPARATE complete
+entries" rule already identifies) — do NOT assign it a heading level from the table at all. That pattern
+means you are still reading the فهرست مطالب listing itself (which can span several chunks), not a real
+occurrence of that section later in the document's body, so the earlier rule applies instead: it is body
+text, emit it as a paragraph (including its dot-leaders and page number, unmodified), never as a heading —
+even though its wording matches an entry in the table above. Only apply the table's heading level to a
+matching line that does NOT end in a dot-leader/page-number pattern, since that is what marks a real
+section start in the body rather than a listing of one.
 
 Nesting from explicit numbering and legal structure — these are stronger signals than font size/boldness
 alone, use them whenever present:
@@ -126,6 +229,11 @@ Rules:
 - Never invent headings, structure, or content that are not present in this chunk's text, and never
   paraphrase or "clean up" the source text — reproduce it as given, aside from joining wrapped-line
   fragments with a single space as instructed above.
+- If two headings are consecutive — one heading immediately followed by another heading, with no
+  paragraph or table between them — their levels can never be equal, and must differ by exactly 1 (never
+  by 2 or more). A heading directly followed by another heading is normally that heading's own title/
+  caption for what follows, one level deeper; assign levels accordingly instead of leaving them as
+  siblings or skipping a level.
 - If the whole document's title becomes apparent in this chunk (usually only possible in the first
   chunk), set `title`; otherwise leave it null.
 """
@@ -136,7 +244,18 @@ def default_model() -> OpenAIChatModel:
     api_key = os.environ.get("DOCSTRUCT_API_KEY")
     model_name = os.environ.get("DOCSTRUCT_MODEL", _DEFAULT_MODEL)
     provider = OpenAIProvider(base_url=base_url, api_key=api_key)
-    return OpenAIChatModel(model_name, provider=provider)
+
+    reasoning_effort = os.environ.get("DOCSTRUCT_REASONING_EFFORT")
+    settings = None
+    if reasoning_effort:
+        # Different OpenAI-compatible gateways honor different fields for this ("reasoning_effort" vs
+        # OpenRouter-style "reasoning": {"enabled": ...}) — send both, unrecognized fields are ignored.
+        extra_body: dict = {"reasoning_effort": reasoning_effort}
+        if reasoning_effort == "none":
+            extra_body["reasoning"] = {"enabled": False}
+        settings = OpenAIChatModelSettings(extra_body=extra_body)
+
+    return OpenAIChatModel(model_name, provider=provider, settings=settings)
 
 
 _ARABIC_TO_PERSIAN_LETTERS = str.maketrans({"ي": "ی", "ك": "ک"})

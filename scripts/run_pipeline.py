@@ -47,6 +47,9 @@ def main() -> None:
         "--max-attempts-per-chunk", type=int, default=2, help="Retry a chunk (fresh sample) if under-covered"
     )
     parser.add_argument("--completeness-threshold", type=float, default=0.7)
+    parser.add_argument(
+        "--max-pages", type=int, default=None, help="Only process the PDF's first N pages (0-indexed), for quick tests"
+    )
     args = parser.parse_args()
 
     out_stem = args.pdf_path.stem
@@ -55,6 +58,9 @@ def main() -> None:
     print(f"Parsing {args.pdf_path} ...", flush=True)
     t0 = time.perf_counter()
     parsed = parse(str(args.pdf_path))
+    if args.max_pages is not None:
+        parsed = parsed.model_copy(update={"blocks": [b for b in parsed.blocks if b.page < args.max_pages]})
+        print(f"  limited to first {args.max_pages} pages", flush=True)
     print(f"  parsed {len(parsed.blocks)} blocks in {time.perf_counter() - t0:.1f}s", flush=True)
 
     total_chunks = len(chunk_blocks(parsed, max_chars=args.max_chars_per_chunk, overlap_blocks=args.overlap_blocks))
