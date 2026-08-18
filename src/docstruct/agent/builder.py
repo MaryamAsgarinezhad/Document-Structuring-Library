@@ -42,10 +42,15 @@ def _op_signature(op: ChunkOp) -> str:
 
 
 class DocumentBuilder:
-    def __init__(self) -> None:
+    def __init__(self, *, align_maddeh_siblings: bool = True) -> None:
+        """``align_maddeh_siblings``: force a new "ماده" heading to the same level as its most
+        recent still-open ماده sibling (see ``_MADDEH_PATTERN``), overriding the model's own level
+        for it. On by default; only relevant to documents that use ماده-numbered legal articles —
+        harmless no-op otherwise, but exposed here so a caller can turn it off explicitly."""
         self.document = StructuredDocument()
         self._open_sections: list[Section] = []
         self._recent_signatures: deque[str] = deque(maxlen=_DEDUP_WINDOW)
+        self._align_maddeh_siblings = align_maddeh_siblings
 
     def set_title(self, title: str) -> None:
         if not self.document.title and title.strip():
@@ -66,7 +71,7 @@ class DocumentBuilder:
 
     def _apply_heading(self, op: NewHeading) -> None:
         level = op.level
-        if _MADDEH_PATTERN.match(op.text):
+        if self._align_maddeh_siblings and _MADDEH_PATTERN.match(op.text):
             for section in reversed(self._open_sections):
                 if _MADDEH_PATTERN.match(section.heading):
                     level = section.level

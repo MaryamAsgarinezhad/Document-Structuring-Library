@@ -50,6 +50,12 @@ def main() -> None:
     parser.add_argument(
         "--max-pages", type=int, default=None, help="Only process the PDF's first N pages (0-indexed), for quick tests"
     )
+    parser.add_argument(
+        "--no-maddeh-alignment",
+        action="store_true",
+        help="Disable forcing a ماده heading to match its most recent open ماده sibling's level; only "
+        "matters for documents that use ماده-numbered legal articles",
+    )
     args = parser.parse_args()
 
     out_stem = args.pdf_path.stem
@@ -91,6 +97,7 @@ def main() -> None:
         skip_failed_chunks=True,
         max_attempts_per_chunk=args.max_attempts_per_chunk,
         completeness_threshold=args.completeness_threshold,
+        align_maddeh_siblings=not args.no_maddeh_alignment,
     )
 
     args.out_dir.mkdir(parents=True, exist_ok=True)

@@ -351,6 +351,7 @@ def structure_document(
     skip_failed_chunks: bool = False,
     max_attempts_per_chunk: int = 2,
     completeness_threshold: float = 0.7,
+    align_maddeh_siblings: bool = True,
 ) -> StructuredDocument:
     """Build a :class:`StructuredDocument` from ``parsed``, chunk by chunk.
 
@@ -394,13 +395,17 @@ def structure_document(
     so set this to ``True`` to log the failure via ``on_chunk`` and
     continue with the next chunk instead — that chunk's content is then
     simply missing from the result rather than the whole run failing.
+
+    ``align_maddeh_siblings``: see :class:`~docstruct.agent.builder.DocumentBuilder`. Only relevant to
+    documents that use ماده-numbered legal articles; set to ``False`` for documents that don't, or if
+    you'd rather trust the model's own heading level for ماده-like text unmodified.
     """
     resolved_model = model if model is not None else default_model()
     agent: Agent[None, ChunkResult] = Agent(
         resolved_model, output_type=ChunkResult, system_prompt=_SYSTEM_PROMPT
     )
 
-    builder = DocumentBuilder()
+    builder = DocumentBuilder(align_maddeh_siblings=align_maddeh_siblings)
     chunks = chunk_blocks(parsed, max_chars=max_chars_per_chunk, overlap_blocks=overlap_blocks)
     for index, chunk in enumerate(chunks, start=1):
         prompt = (
